@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_path=$(readlink -f -- "${BASH_SOURCE[0]}")
+project_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+myst_bin=${MYST_BIN:-}
+
+if [[ -z "$myst_bin" ]]; then
+  while IFS= read -r candidate; do
+    [[ -n "$candidate" ]] || continue
+    if [[ $(readlink -f -- "$candidate" 2>/dev/null || printf '%s' "$candidate") != "$script_path" ]]; then
+      myst_bin=$candidate
+      break
+    fi
+  done < <(which -a myst 2>/dev/null)
+fi
+
+if [[ -z "$myst_bin" ]]; then
+  printf 'Could not locate the installed myst executable. Activate your environment or set MYST_BIN.\n' >&2
+  exit 1
+fi
+
+if [[ ${1:-} == build || ${1:-} == start ]]; then
+  python3 "$project_dir/generate_blog.py"
+fi
+
+exec "$myst_bin" "$@"
