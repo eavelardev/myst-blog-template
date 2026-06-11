@@ -6,11 +6,9 @@ This tool creates tags sections from posts.
 
 Create a MyST project or use an existing one.
 
-Use the next command to create a new one
 ```
-myst init
+myst init --project --site
 ```
-not start the project yet
 
 Add posts to `blog/posts` using this format
 
